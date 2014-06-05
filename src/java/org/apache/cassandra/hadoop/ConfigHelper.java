@@ -73,6 +73,8 @@ public class ConfigHelper
     private static final String INPUT_TRANSPORT_FACTORY_CLASS = "cassandra.input.transport.factory.class";
     private static final String OUTPUT_TRANSPORT_FACTORY_CLASS = "cassandra.output.transport.factory.class";
     private static final String THRIFT_FRAMED_TRANSPORT_SIZE_IN_MB = "cassandra.thrift.framed.size_mb";
+    private static final String OUTPUT_LOCAL_ONLY = "cassandra.output.local_only";
+    private static final String OUTPUT_USE_RPC_ADDRESS = "cassandra.output.use.rpc.address";
 
     private static final Logger logger = LoggerFactory.getLogger(ConfigHelper.class);
 
@@ -497,6 +499,27 @@ public class ConfigHelper
     {
         return conf.getInt(THRIFT_FRAMED_TRANSPORT_SIZE_IN_MB, 15) * 1024 * 1024; // 15MB is default in Cassandra
     }
+
+    public static boolean getOutputLocalOnly(Configuration conf)
+    {
+        return Boolean.parseBoolean(conf.get(OUTPUT_LOCAL_ONLY));
+    }
+
+    public static void setOutputLocalOnly(Configuration conf, Boolean isLocalOnly)
+    {
+        conf.set(OUTPUT_LOCAL_ONLY, isLocalOnly.toString());
+    }
+
+    public static Boolean getOutputUseRpcAddress(Configuration conf)
+    {
+        return Boolean.parseBoolean(conf.get(OUTPUT_USE_RPC_ADDRESS));
+    }
+
+    public static void setOutputUseRpcAddress(Configuration conf, Boolean shouldUseRpcAddress)
+    {
+        conf.set(OUTPUT_USE_RPC_ADDRESS, shouldUseRpcAddress.toString());
+    }
+
 
     public static CompressionParameters getOutputCompressionParamaters(Configuration conf)
     {

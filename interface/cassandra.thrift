@@ -30,7 +30,7 @@ namespace py cassandra
 namespace php cassandra
 namespace perl Cassandra
 
-# Thrift.rb has a bug where top-level modules that include modules 
+# Thrift.rb has a bug where top-level modules that include modules
 # with the same name are not properly referenced, so we can't do
 # Cassandra::Cassandra::Client.
 namespace rb CassandraThrift
@@ -66,7 +66,7 @@ const string VERSION = "19.36.0"
  * @param name, the name by which this column is set and retrieved.  Maximum 64KB long.
  * @param value. The data associated with the name.  Maximum 2GB long, but in practice you should limit it to small numbers of MB (since Thrift must read the full value into memory to operate on it).
  * @param timestamp. The timestamp is used for conflict detection/resolution when two columns with same name need to be compared.
- * @param ttl. An optional, positive delay (in seconds) after which the column will be automatically deleted. 
+ * @param ttl. An optional, positive delay (in seconds) after which the column will be automatically deleted.
  */
 struct Column {
    1: required binary name,
@@ -102,7 +102,7 @@ struct CounterSuperColumn {
     in Columns, those values will be in the attribute column. This change was made between 0.3 and 0.4 to standardize on
     single query methods that may return either a SuperColumn or Column.
 
-    If the query was on a counter column family, you will either get a counter_column (instead of a column) or a 
+    If the query was on a counter column family, you will either get a counter_column (instead of a column) or a
     counter_super_column (instead of a super_column)
 
     @param column. The Column returned by get() or get_slice().
@@ -127,7 +127,7 @@ struct ColumnOrSuperColumn {
 exception NotFoundException {
 }
 
-/** Invalid request could mean keyspace or column family does not exist, required parameters are missing, or a parameter is malformed. 
+/** Invalid request could mean keyspace or column family does not exist, required parameters are missing, or a parameter is malformed.
     why contains an associated error message.
 */
 exception InvalidRequestException {
@@ -177,11 +177,11 @@ exception SchemaDisagreementException {
 #
 # service api
 #
-/** 
+/**
  * The ConsistencyLevel is an enum that controls both read and write
  * behavior based on the ReplicationFactor of the keyspace.  The
  * different consistency levels have different meanings, depending on
- * if you're doing a write or read operation. 
+ * if you're doing a write or read operation.
  *
  * If W + R > ReplicationFactor, where W is the number of nodes to
  * block for on write, and R the number to block for on reads, you
@@ -191,14 +191,14 @@ exception SchemaDisagreementException {
  * still allowing availability in the face of node failures up to half
  * of <ReplicationFactor>. Of course if latency is more important than
  * consistency then you can use lower values for either or both.
- * 
+ *
  * Some ConsistencyLevels (ONE, TWO, THREE) refer to a specific number
  * of replicas rather than a logical concept that adjusts
  * automatically with the replication factor.  Of these, only ONE is
  * commonly used; TWO and (even more rarely) THREE are only useful
  * when you care more about guaranteeing a certain level of
  * durability, than consistency.
- * 
+ *
  * Write consistency levels make the following guarantees before reporting success to the client:
  *   ANY          Ensure that the write has been written once somewhere, including possibly being hinted in a non-target node.
  *   ONE          Ensure that the write has been written to at least 1 node's commit log and memory table
@@ -208,7 +208,7 @@ exception SchemaDisagreementException {
  *   LOCAL_QUORUM Ensure that the write has been written to <ReplicationFactor> / 2 + 1 nodes, within the local datacenter (requires NetworkTopologyStrategy)
  *   EACH_QUORUM  Ensure that the write has been written to <ReplicationFactor> / 2 + 1 nodes in each datacenter (requires NetworkTopologyStrategy)
  *   ALL          Ensure that the write is written to <code>&lt;ReplicationFactor&gt;</code> nodes before responding to the client.
- * 
+ *
  * Read consistency levels make the following guarantees before returning successful results to the client:
  *   ANY          Not supported. You probably want ONE instead.
  *   ONE          Returns the record obtained from a single replica.
@@ -530,10 +530,10 @@ struct CfSplit {
 service Cassandra {
   # auth methods
   void login(1: required AuthenticationRequest auth_request) throws (1:AuthenticationException authnx, 2:AuthorizationException authzx),
- 
+
   # set keyspace
   void set_keyspace(1: required string keyspace) throws (1:InvalidRequestException ire),
-  
+
   # retrieval methods
 
   /**
@@ -549,18 +549,18 @@ service Cassandra {
     Get the group of columns contained by column_parent (either a ColumnFamily name or a ColumnFamily/SuperColumn name
     pair) specified by the given SlicePredicate. If no matching values are found, an empty list is returned.
    */
-  list<ColumnOrSuperColumn> get_slice(1:required binary key, 
-                                      2:required ColumnParent column_parent, 
-                                      3:required SlicePredicate predicate, 
+  list<ColumnOrSuperColumn> get_slice(1:required binary key,
+                                      2:required ColumnParent column_parent,
+                                      3:required SlicePredicate predicate,
                                       4:required ConsistencyLevel consistency_level=ConsistencyLevel.ONE)
                             throws (1:InvalidRequestException ire, 2:UnavailableException ue, 3:TimedOutException te),
 
   /**
-    returns the number of columns matching <code>predicate</code> for a particular <code>key</code>, 
+    returns the number of columns matching <code>predicate</code> for a particular <code>key</code>,
     <code>ColumnFamily</code> and optionally <code>SuperColumn</code>.
   */
-  i32 get_count(1:required binary key, 
-                2:required ColumnParent column_parent, 
+  i32 get_count(1:required binary key,
+                2:required ColumnParent column_parent,
                 3:required SlicePredicate predicate,
                 4:required ConsistencyLevel consistency_level=ConsistencyLevel.ONE)
       throws (1:InvalidRequestException ire, 2:UnavailableException ue, 3:TimedOutException te),
@@ -568,9 +568,9 @@ service Cassandra {
   /**
     Performs a get_slice for column_parent and predicate for the given keys in parallel.
   */
-  map<binary,list<ColumnOrSuperColumn>> multiget_slice(1:required list<binary> keys, 
-                                                       2:required ColumnParent column_parent, 
-                                                       3:required SlicePredicate predicate, 
+  map<binary,list<ColumnOrSuperColumn>> multiget_slice(1:required list<binary> keys,
+                                                       2:required ColumnParent column_parent,
+                                                       3:required SlicePredicate predicate,
                                                        4:required ConsistencyLevel consistency_level=ConsistencyLevel.ONE)
                                         throws (1:InvalidRequestException ire, 2:UnavailableException ue, 3:TimedOutException te),
 
@@ -586,7 +586,7 @@ service Cassandra {
   /**
    returns a subset of columns for a contiguous range of keys.
   */
-  list<KeySlice> get_range_slices(1:required ColumnParent column_parent, 
+  list<KeySlice> get_range_slices(1:required ColumnParent column_parent,
                                   2:required SlicePredicate predicate,
                                   3:required KeyRange range,
                                   4:required ConsistencyLevel consistency_level=ConsistencyLevel.ONE)
@@ -616,7 +616,7 @@ service Cassandra {
   /**
    * Insert a Column at the given column_parent.column_family and optional column_parent.super_column.
    */
-  void insert(1:required binary key, 
+  void insert(1:required binary key,
               2:required ColumnParent column_parent,
               3:required Column column,
               4:required ConsistencyLevel consistency_level=ConsistencyLevel.ONE)
@@ -675,21 +675,21 @@ service Cassandra {
    From the user's perspective a successful call to truncate will result complete data deletion from cfname.
    Internally, however, disk space will not be immediatily released, as with all deletes in cassandra, this one
    only marks the data as deleted.
-   The operation succeeds only if all hosts in the cluster at available and will throw an UnavailableException if 
+   The operation succeeds only if all hosts in the cluster at available and will throw an UnavailableException if
    some hosts are down.
   */
   void truncate(1:required string cfname)
        throws (1: InvalidRequestException ire, 2: UnavailableException ue, 3: TimedOutException te),
 
 
-    
+
   // Meta-APIs -- APIs to get information about the node or cluster,
   // rather than user data.  The nodeprobe program provides usage examples.
-  
-  /** 
+
+  /**
    * for each schema version present in the cluster, returns a list of nodes at that version.
-   * hosts that do not respond will be under the key DatabaseDescriptor.INITIAL_VERSION. 
-   * the cluster is all on the same version if the size of the map is 1. 
+   * hosts that do not respond will be under the key DatabaseDescriptor.INITIAL_VERSION.
+   * the cluster is all on the same version if the size of the map is 1.
    */
   map<string, list<string>> describe_schema_versions()
        throws (1: InvalidRequestException ire),
@@ -708,19 +708,23 @@ service Cassandra {
       represented as a set of TokenRange instead of a map from range
       to list of endpoints, because you can't use Thrift structs as
       map keys:
-      https://issues.apache.org/jira/browse/THRIFT-162 
+      https://issues.apache.org/jira/browse/THRIFT-162
 
       for the same reason, we can't return a set here, even though
       order is neither important nor predictable. */
   list<TokenRange> describe_ring(1:required string keyspace)
                    throws (1:InvalidRequestException ire),
 
+  /** same as describe_ring, but considers only nodes in the local DC */
+  list<TokenRange> describe_local_ring(1:required string keyspace)
+                     throws (1:InvalidRequestException ire),
+
   /** get the mapping between token->node ip
       without taking replication into consideration
       https://issues.apache.org/jira/browse/CASSANDRA-4092 */
   map<string, string> describe_token_map()
                     throws (1:InvalidRequestException ire),
-  
+
   /** returns the partitioner used by this cluster */
   string describe_partitioner(),
 
@@ -731,13 +735,13 @@ service Cassandra {
   KsDef describe_keyspace(1:required string keyspace)
     throws (1:NotFoundException nfe, 2:InvalidRequestException ire),
 
-  /** experimental API for hadoop/parallel query support.  
-      may change violently and without warning. 
+  /** experimental API for hadoop/parallel query support.
+      may change violently and without warning.
 
       returns list of token strings such that first subrange is (list[0], list[1]],
       next is (list[1], list[2]], etc. */
   list<string> describe_splits(1:required string cfName,
-                               2:required string start_token, 
+                               2:required string start_token,
                                3:required string end_token,
                                4:required i32 keys_per_split)
     throws (1:InvalidRequestException ire),
@@ -750,32 +754,32 @@ service Cassandra {
                                    2:required string start_token,
                                    3:required string end_token,
                                    4:required i32 keys_per_split)
-    throws (1:InvalidRequestException ire), 
+    throws (1:InvalidRequestException ire),
 
   /** adds a column family. returns the new schema id. */
   string system_add_column_family(1:required CfDef cf_def)
     throws (1:InvalidRequestException ire, 2:SchemaDisagreementException sde),
-    
+
   /** drops a column family. returns the new schema id. */
   string system_drop_column_family(1:required string column_family)
-    throws (1:InvalidRequestException ire, 2:SchemaDisagreementException sde), 
-  
+    throws (1:InvalidRequestException ire, 2:SchemaDisagreementException sde),
+
   /** adds a keyspace and any column families that are part of it. returns the new schema id. */
   string system_add_keyspace(1:required KsDef ks_def)
     throws (1:InvalidRequestException ire, 2:SchemaDisagreementException sde),
-  
+
   /** drops a keyspace and any column families that are part of it. returns the new schema id. */
   string system_drop_keyspace(1:required string keyspace)
     throws (1:InvalidRequestException ire, 2:SchemaDisagreementException sde),
-  
+
   /** updates properties of a keyspace. returns the new schema id. */
   string system_update_keyspace(1:required KsDef ks_def)
     throws (1:InvalidRequestException ire, 2:SchemaDisagreementException sde),
-        
+
   /** updates properties of a column family. returns the new schema id. */
   string system_update_column_family(1:required CfDef cf_def)
     throws (1:InvalidRequestException ire, 2:SchemaDisagreementException sde),
-  
+
   /**
    * Executes a CQL (Cassandra Query Language) statement and returns a
    * CqlResult containing the results.
@@ -797,7 +801,7 @@ service Cassandra {
    * Prepare a CQL (Cassandra Query Language) statement by compiling and returning
    * - the type of CQL statement
    * - an id token of the compiled CQL stored on the server side.
-   * - a count of the discovered bound markers in the statement 
+   * - a count of the discovered bound markers in the statement
    */
   CqlPreparedResult prepare_cql_query(1:required binary query, 2:required Compression compression)
     throws (1:InvalidRequestException ire)
@@ -805,7 +809,7 @@ service Cassandra {
   CqlPreparedResult prepare_cql3_query(1:required binary query, 2:required Compression compression)
     throws (1:InvalidRequestException ire)
 
-             
+
   /**
    * Executes a prepared CQL (Cassandra Query Language) statement by passing an id token and  a list of variables
    * to bind and returns a CqlResult containing the results.

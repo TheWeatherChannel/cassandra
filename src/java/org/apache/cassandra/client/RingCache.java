@@ -46,6 +46,8 @@ import com.google.common.collect.Multimap;
 public class RingCache
 {
     final private static Logger logger = LoggerFactory.getLogger(RingCache.class);
+    private final Boolean isLocalOnly;
+    private final Boolean shouldUseRpcAddress;
 
     private final IPartitioner<?> partitioner;
     private final Configuration conf;
@@ -56,6 +58,8 @@ public class RingCache
     {
         this.conf = conf;
         this.partitioner = ConfigHelper.getOutputPartitioner(conf);
+        this.isLocalOnly = ConfigHelper.getOutputLocalOnly(conf);
+        this.shouldUseRpcAddress = ConfigHelper.getOutputUseRpcAddress(conf);
         refreshEndpointMap();
     }
 
@@ -65,7 +69,13 @@ public class RingCache
 
                 Cassandra.Client client = ConfigHelper.getClientFromOutputAddressList(conf);
 
-                List<TokenRange> ring = client.describe_ring(ConfigHelper.getOutputKeyspace(conf));
+                List<TokenRange> ring;
+
+                if (isLocalOnly)
+                    ring = client.describe_local_ring(ConfigHelper.getOutputKeyspace(conf));
+                else
+                    ring = client.describe_ring(ConfigHelper.getOutputKeyspace(conf));
+
                 rangeMap = ArrayListMultimap.create();
 
                 for (TokenRange range : ring)
@@ -73,7 +83,14 @@ public class RingCache
                     Token<?> left = partitioner.getTokenFactory().fromString(range.start_token);
                     Token<?> right = partitioner.getTokenFactory().fromString(range.end_token);
                     Range<Token> r = new Range<Token>(left, right, partitioner);
-                    for (String host : range.endpoints)
+
+                    List<String> eps;
+                    if (shouldUseRpcAddress)
+                        eps = range.rpc_endpoints;
+                    else
+                        eps = range.endpoints;
+
+                    for (String host : eps)
                     {
                         try
                         {
