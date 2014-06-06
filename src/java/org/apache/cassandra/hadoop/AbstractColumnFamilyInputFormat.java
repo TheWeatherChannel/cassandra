@@ -249,7 +249,7 @@ public abstract class AbstractColumnFamilyInputFormat<K, Y> extends InputFormat<
                                     subSplit.getRow_count(),
                                     endpoints);
 
-                    logger.debug("adding " + split);
+                    logger.debug("adding " + split + " using Robbie's hack code");
                     splits.add(split);
                 }
             }
@@ -318,7 +318,7 @@ public abstract class AbstractColumnFamilyInputFormat<K, Y> extends InputFormat<
         List<TokenRange> map;
         try
         {
-            map = client.describe_ring(ConfigHelper.getInputKeyspace(conf));
+            map = client.describe_local_ring(ConfigHelper.getInputKeyspace(conf));
         }
         catch (InvalidRequestException e)
         {

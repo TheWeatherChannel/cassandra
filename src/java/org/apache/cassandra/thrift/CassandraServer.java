@@ -1180,6 +1180,18 @@ public class CassandraServer implements Cassandra.Iface
         }
     }
 
+    public List<TokenRange> describe_local_ring(String keyspace) throws InvalidRequestException
+    {
+        try
+        {
+            return StorageService.instance.describeRing(keyspace);
+        }
+        catch (RequestValidationException e)
+        {
+            throw ThriftConversion.toThrift(e);
+        }
+    }
+
     public Map<String, String> describe_token_map() throws InvalidRequestException
     {
         return StorageService.instance.getTokenToEndpointMap();

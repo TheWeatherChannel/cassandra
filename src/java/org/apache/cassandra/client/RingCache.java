@@ -71,10 +71,11 @@ public class RingCache
 
                 List<TokenRange> ring;
 
-                if (isLocalOnly)
+                //if (isLocalOnly)
+		logger.info("Refreshing endpoint map using Robbie's hack...");
                     ring = client.describe_local_ring(ConfigHelper.getOutputKeyspace(conf));
-                else
-                    ring = client.describe_ring(ConfigHelper.getOutputKeyspace(conf));
+                //else
+                //    ring = client.describe_ring(ConfigHelper.getOutputKeyspace(conf));
 
                 rangeMap = ArrayListMultimap.create();
 
@@ -85,15 +86,16 @@ public class RingCache
                     Range<Token> r = new Range<Token>(left, right, partitioner);
 
                     List<String> eps;
-                    if (shouldUseRpcAddress)
+                //    if (shouldUseRpcAddress)
                         eps = range.rpc_endpoints;
-                    else
-                        eps = range.endpoints;
+                //    else
+                //        eps = range.endpoints;
 
                     for (String host : eps)
                     {
                         try
                         {
+			    logger.info("Adding host to endpoint map: " + host);
                             rangeMap.put(r, InetAddress.getByName(host));
                         }
                         catch (UnknownHostException e)
